@@ -1,0 +1,27 @@
+{
+  "hostImports": {
+    "view.sql": [
+      "/core/runtime.js",
+      "/util/sql.js",
+      "/util/view-plugin.js",
+      "/widgets/view-pagination.js"
+    ],
+    "view.sql-console": [
+      "/util/sql.js",
+      "/util/view-plugin.js",
+      "/widgets/code-editor.js"
+    ],
+    "view.sql-table-editor": [
+      "/core/runtime.js",
+      "/util/sql.js",
+      "/util/view-plugin.js"
+    ]
+  },
+  "limits": "Parent must add source-bound LICENSE/NOTICE evidence before distribution.",
+  "transformation": "Blend entries remove only the other registration block; original source retained under upstream/.",
+  "upstream_sha256": {
+    "views/sql-table-editor.js": "f221c37c69be75e6df33be82c5f84327ec4a8462f710f81bb590bd829cb5c252",
+    "views/view-sql-console.js": "da78aef758222844ce8d2e633a8294eba4417e0171e3a209ddacc20eabe61124",
+    "views/view-sql.js": "4dd6629861fc924ff62028cb593163826351e24819b518615a1036a6b4b90fe3"
+  }
+}
