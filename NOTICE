@@ -6,4 +6,4 @@ Absolute /util/, /widgets/, /core/ imports are Host-provided runtime dependencie
 
 Full terms: LICENSES/. Review: THIRD-PARTY-REVIEW.md. This notice is source-bound, not a certification of unverified upstream provenance or current linked contents.
 
-NOTICE-EVIDENCE.json SHA-256: f15a9bbf456d5176c6077b9108f1c5865cd7d31fa1ca09aac6d5e45669d1c962
+NOTICE-EVIDENCE.json SHA-256: 23bdcce823d103608a8bbcce1212b094583c3b12eff7a2aa55b2304f32e50473
