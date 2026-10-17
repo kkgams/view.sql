@@ -6,8 +6,9 @@
   "name": "view.sql",
   "private": true,
   "scripts": {
-    "test": "node scripts/verify.mjs && node scripts/test-blend.mjs && python3 -m unittest discover -s test"
+    "test": "node scripts/verify.mjs && node --test test/*.test.mjs && python3 -m unittest discover -s test -p 'test_*.py'",
+    "package": "python3 scripts/release.py"
   },
   "type": "module",
-  "version": "0.2.0"
+  "version": "1.0.0"
 }

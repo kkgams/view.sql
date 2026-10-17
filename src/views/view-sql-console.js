@@ -1,5 +1,5 @@
-import { registerViewPlugin, unregisterViewPlugin } from "/util/view-plugin.js"
 import { sql as sqlConnection } from "/util/sql.js"
+import { registerViewPlugin, unregisterViewPlugin } from "/util/view-plugin.js"
 import "/widgets/code-editor.js"
 
 function firstSqlToken(sql) {
@@ -144,10 +144,16 @@ function formatQueryResultAsTable(result) {
     }
 
     const separator = `+${columnWidths.map((width) => "-".repeat(width + 2)).join("+")}+`
-    const lines = [separator, `| ${columns.map((column, index) => String(column).padEnd(columnWidths[index])).join(" | ")} |`, separator]
+    const lines = [
+        separator,
+        `| ${columns.map((column, index) => String(column).padEnd(columnWidths[index])).join(" | ")} |`,
+        separator,
+    ]
 
     for (const row of rows) {
-        lines.push(`| ${columns.map((column, index) => String(row[column] ?? "").padEnd(columnWidths[index])).join(" | ")} |`)
+        lines.push(
+            `| ${columns.map((column, index) => String(row[column] ?? "").padEnd(columnWidths[index])).join(" | ")} |`,
+        )
     }
 
     if (rows.length > 0) lines.push(separator)
@@ -293,7 +299,16 @@ export class ViewSqlConsole extends HTMLElement {
     appendOutput(type, content) {
         if (!this.outputElement) return
 
-        const tone = type === "command" ? "accent" : type === "success" ? "success" : type === "error" ? "danger" : type === "info" ? "info" : null
+        const tone =
+            type === "command"
+                ? "accent"
+                : type === "success"
+                  ? "success"
+                  : type === "error"
+                    ? "danger"
+                    : type === "info"
+                      ? "info"
+                      : null
 
         if (this.outputElement.childElementCount > 0) {
             const spacer = document.createElement("span")

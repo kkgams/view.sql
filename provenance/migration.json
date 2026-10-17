@@ -1,0 +1,10 @@
+{
+  "base_commit": "e5353616d98023c866bc2edd73a2d739822ca90a",
+  "template_commit": "055895c08d5ef8ed4739587fe92b7cdd93c35818",
+  "scope": "Owner approved including all existing source edits, flattening source directories without further source-byte changes, template-based release authorization, and one 1.0.0 archive. Historical records retain original limits; this is not a new audit.",
+  "sources_sha256": {
+    "src/views/view-sql.js": "7c7a299bd5b518933bfdae2231de6e76d4e4cb3bc5ee0c6f53c1b7ced613f6bf",
+    "src/views/view-sql-console.js": "ea046649922cafa64b0620a02bde8114d6a5a76f6ed44330584c9ffa02a41b08",
+    "src/views/sql-table-editor.js": "f493f740755d0382f2f0ca407c1290c3d23c9f4fc0ef417da821cb6a07047ba3"
+  }
+}

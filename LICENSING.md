@@ -1,5 +1,11 @@
-# Licensing scope
+# Licensing
 
-Owner-approved Apache-2.0 applies only to GAMS-authored contributions. Third-party works retain the full terms in LICENSES/ and original source notices. Review THIRD-PARTY-REVIEW.md and source-bound NOTICE-EVIDENCE.json before approval of exact digests.
+GAMS-authored contributions are Apache-2.0. LICENSE is unchanged and NOTICE lists
+the bundled Views. Host-provided helpers, widgets and runtime libraries remain
+separate. Preserve required attribution if third-party code or assets are added.
 
-Distribute LICENSE, NOTICE, NOTICE-EVIDENCE.json, THIRD-PARTY-REVIEW.md, LICENSING.md and every applicable LICENSES file with source, View ZIPs and compiler/tooling ZIPs; WASM release assets must retain readable terms beside embedded notices. ZIP/binary packaging must not drop those terms. Preparation is not publication approval.
+The bounded historical review identified no vendored third-party implementation
+or separate upstream terms in the selected Views; this is not an authorship
+certificate. Original records and their limitations are preserved under
+provenance/legacy-0.2.0/ and described in NOTES.md. They are historical, not
+approval gates. Commit-based approval supersedes the old digest-review process.

@@ -1,74 +1,52 @@
-name: Verify and publish Project Unit
+name: Test and release View
 on:
   push:
-    branches: [release]
+    branches: ['**']
     tags: ['v*']
   pull_request:
 permissions:
   contents: read
 concurrency:
-  group: unit-release-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 jobs:
-  candidate:
+  verify:
     runs-on: ubuntu-latest
-    env:
-      APPROVED_LICENSE_SHA256: ${{ vars.LICENSE_SHA256 }}
-      APPROVED_NOTICE_SHA256: ${{ vars.NOTICE_SHA256 }}
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          fetch-depth: 0
-          # Checkout event commit: v5 tag-mode can replace an annotation with GITHUB_SHA.
-          ref: ${{ github.sha }}
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
       - run: npm test
-      - name: Validate dedicated policy-read credential before any tag publication
-        if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/release' && (vars.LICENSE_SHA256 != '' || vars.NOTICE_SHA256 != ''))
+      - run: make validate-docs
+      - name: Check release tag and package
         env:
-          RELEASE_POLICY_TOKEN: ${{ secrets.RELEASE_POLICY_TOKEN }}
-        run: python3 scripts/publication.py policy
-      - name: Require tag at release HEAD
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: python3 scripts/release.py branch --tag "$GITHUB_REF_NAME"
-      - name: Independently stage and check candidate
-        if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/release' && (vars.LICENSE_SHA256 != '' || vars.NOTICE_SHA256 != ''))
+          RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
         run: |
-          tag="v$(python3 -c 'import json; print(json.load(open("package.json"))["version"])')"
-          python3 scripts/release.py stage --tag "$tag"
-          python3 scripts/release.py check --tag "$tag"
+          if [ -n "$RELEASE_TAG" ]; then
+            python3 scripts/release.py --tag "$RELEASE_TAG"
+          else
+            npm run package
+          fi
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        if: startsWith(github.ref, 'refs/tags/v') || (github.ref == 'refs/heads/release' && (vars.LICENSE_SHA256 != '' || vars.NOTICE_SHA256 != ''))
         with:
-          name: unit-${{ github.ref_name }}
-          path: dist/candidate/
+          name: view-release
+          path: dist/
           if-no-files-found: error
   publish:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: candidate
+    needs: verify
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      APPROVED_LICENSE_SHA256: ${{ vars.LICENSE_SHA256 }}
-      APPROVED_NOTICE_SHA256: ${{ vars.NOTICE_SHA256 }}
-      GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
-        with:
-          fetch-depth: 0
-          # Preserve fetched tag objects for the strict publisher identity check.
-          ref: ${{ github.sha }}
-      - run: python3 scripts/release.py branch --tag "$GITHUB_REF_NAME"
-      - run: python3 scripts/release.py absent --tag "$GITHUB_REF_NAME"
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
-          name: unit-${{ github.ref_name }}
-          path: dist/candidate/
-      - run: python3 scripts/release.py check --tag "$GITHUB_REF_NAME"
-      - name: Publish immutable tag release (no npm or OCI)
+          name: view-release
+          path: dist/
+      - name: Publish GitHub Release (never overwrite an existing release)
         env:
-          RELEASE_POLICY_TOKEN: ${{ secrets.RELEASE_POLICY_TOKEN }}
-        run: python3 scripts/publication.py publish --tag "$GITHUB_REF_NAME"
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: gh release create "$RELEASE_TAG" --verify-tag --title "$RELEASE_TAG" --generate-notes dist/*
