@@ -13,7 +13,7 @@ row editing and query-based selection. `view-sql-console`
 specifying columns, types, primary keys and constraints.
 
 Register each View separately in the external Project using the same
-`view.sql-1.0.0.zip` URL with its corresponding `#views/...` entry fragment.
+`view.sql-1.0.1.zip` URL with its corresponding `#views/...` entry fragment.
 The Views require a compatible GAMS Host, `plugin.sql`, and the `ui.popup` and
 `ui.toast` services; SQL helpers, editor/pagination widgets and styling come
 from the Host. The archive retains LICENSE, NOTICE, README.md and NOTES.md,

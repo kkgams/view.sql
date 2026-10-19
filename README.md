@@ -32,15 +32,15 @@ checksums and reproducibility, not native Host integration or theme rendering.
 
 ## Install
 
-The 1.0.0 release archive contains all three deployment paths above and LICENSE,
+The 1.0.1 release archive contains all three deployment paths above and LICENSE,
 NOTICE, README.md and NOTES.md. It strips `src/` and does not include `unit.json`.
 After publication, register each View separately using the same archive URL and
 its own entry fragment, for example:
 
 ```text
-https://github.com/kkgams/view.sql/releases/download/v1.0.0/view.sql-1.0.0.zip#views/view-sql.js
-https://github.com/kkgams/view.sql/releases/download/v1.0.0/view.sql-1.0.0.zip#views/view-sql-console.js
-https://github.com/kkgams/view.sql/releases/download/v1.0.0/view.sql-1.0.0.zip#views/sql-table-editor.js
+https://github.com/kkgams/view.sql/releases/download/v1.0.1/view.sql-1.0.1.zip#views/view-sql.js
+https://github.com/kkgams/view.sql/releases/download/v1.0.1/view.sql-1.0.1.zip#views/view-sql-console.js
+https://github.com/kkgams/view.sql/releases/download/v1.0.1/view.sql-1.0.1.zip#views/sql-table-editor.js
 ```
 
 For manual installation, download the ZIP and SHA256SUMS, run
@@ -64,12 +64,11 @@ suffixes or leading zeros. Use **major** for incompatible public API changes,
 changes without API changes. Public API includes View IDs, inputs, outputs,
 deployment paths and required Host facilities. Use the largest applicable bump.
 
-After testing and committing the prepared 1.0.0 source, when tag and remote
-publication are authorized:
+The prepared 1.0.1 release fixes BLOB rendering and prevents text editing of
+binary cells. After local validation and tagging, push when publication is authorized:
 
 ```sh
-git tag v1.0.0
-git push origin HEAD refs/tags/v1.0.0
+git push origin HEAD refs/tags/v1.0.1
 ```
 
 For later releases, start from a clean checkout with changes committed:

@@ -554,6 +554,11 @@ export class ViewSql extends HTMLElement {
         const colType = this.detectColumnType(column, value)
 
         switch (colType) {
+            case "binary": {
+                const size = ArrayBuffer.isView(value) ? value.byteLength : value.length
+                td.textContent = `BLOB · ${size} ${size === 1 ? "byte" : "bytes"}`
+                break
+            }
             case "boolean": {
                 const checkbox = document.createElement("input")
                 checkbox.type = "checkbox"
@@ -566,7 +571,7 @@ export class ViewSql extends HTMLElement {
                 td.textContent = value ?? ""
                 break
             default:
-                if (value && value.length > 100) {
+                if (typeof value === "string" && value.length > 100) {
                     td.textContent = value.substring(0, 100) + "..."
                     td.title = value
                 } else {
@@ -576,6 +581,12 @@ export class ViewSql extends HTMLElement {
     }
 
     detectColumnType(column, value) {
+        // SQL binary values arrive as typed bytes or JSON-transport byte arrays.
+        if (
+            ArrayBuffer.isView(value) ||
+            (Array.isArray(value) && value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255))
+        ) return "binary"
+
         const lowerCol = String(column || "").toLowerCase()
         const booleanWords = [
             "enabled",
@@ -697,9 +708,10 @@ export class ViewSql extends HTMLElement {
     }
 
     startEdit(td, rowIndex, colIndex, currentValue, column) {
-        this.cancelEdit()
-
         const colType = this.detectColumnType(column, currentValue)
+        if (colType === "binary") return
+
+        this.cancelEdit()
         this.editingCell = {
             td,
             rowIndex,
