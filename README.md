@@ -32,15 +32,15 @@ checksums and reproducibility, not native Host integration or theme rendering.
 
 ## Install
 
-The 1.0.1 release archive contains all three deployment paths above and LICENSE,
+The 1.1.0 release archive contains all three deployment paths above and LICENSE,
 NOTICE, README.md and NOTES.md. It strips `src/` and does not include `unit.json`.
 After publication, register each View separately using the same archive URL and
 its own entry fragment, for example:
 
 ```text
-https://github.com/kkgams/view.sql/releases/download/v1.0.1/view.sql-1.0.1.zip#views/view-sql.js
-https://github.com/kkgams/view.sql/releases/download/v1.0.1/view.sql-1.0.1.zip#views/view-sql-console.js
-https://github.com/kkgams/view.sql/releases/download/v1.0.1/view.sql-1.0.1.zip#views/sql-table-editor.js
+https://github.com/kkgams/view.sql/releases/download/v1.1.0/view.sql-1.1.0.zip#views/view-sql.js
+https://github.com/kkgams/view.sql/releases/download/v1.1.0/view.sql-1.1.0.zip#views/view-sql-console.js
+https://github.com/kkgams/view.sql/releases/download/v1.1.0/view.sql-1.1.0.zip#views/sql-table-editor.js
 ```
 
 For manual installation, download the ZIP and SHA256SUMS, run
@@ -64,11 +64,12 @@ suffixes or leading zeros. Use **major** for incompatible public API changes,
 changes without API changes. Public API includes View IDs, inputs, outputs,
 deployment paths and required Host facilities. Use the largest applicable bump.
 
-The prepared 1.0.1 release fixes BLOB rendering and prevents text editing of
-binary cells. After local validation and tagging, push when publication is authorized:
+The prepared 1.1.0 release adds clickable, keyboard-accessible column sorting in
+browser mode, with full-table SQL ordering before pagination and sidebar sorting.
+Direction indicators require GAMS 2.1.0 or newer shared styling. After local validation and tagging, push when publication is authorized:
 
 ```sh
-git push origin HEAD refs/tags/v1.0.1
+git push origin HEAD refs/tags/v1.1.0
 ```
 
 For later releases, start from a clean checkout with changes committed:

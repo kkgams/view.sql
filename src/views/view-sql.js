@@ -33,6 +33,10 @@ export class ViewSql extends HTMLElement {
         this.popupProps = this.popupProps || {}
         this.tables = []
         this.selectedTable = null
+        this.sortColumn = null
+        this.sortDirection = "ascending"
+        this.tablesSortColumn = null
+        this.tablesSortDirection = "ascending"
         this.rows = []
         this.columns = []
         this.currentPage = 0
@@ -286,6 +290,7 @@ export class ViewSql extends HTMLElement {
         }
 
         if (tableToSelect !== null) {
+            if (tableToSelect !== this.selectedTable) this.sortColumn = null
             this.selectedTable = tableToSelect
             this.currentPage = 0
             this.selectedRowIndex = -1
@@ -322,6 +327,7 @@ export class ViewSql extends HTMLElement {
         }
 
         if (!this.selectedTable || !this.tables.some((table) => table.name === this.selectedTable)) {
+            this.sortColumn = null
             this.selectedTable = this.tables[0] ? this.tables[0].name : null
             this.currentPage = 0
         }
@@ -336,9 +342,14 @@ export class ViewSql extends HTMLElement {
         const offset = this.currentPage * this.pageSize
         this.columns = await this.fetchTableColumns(this.selectedTable)
         this.primaryKey = await this.detectPrimaryKey(this.selectedTable, this.columns)
+        if (this.sortColumn !== null && !this.columns.includes(this.sortColumn)) this.sortColumn = null
+        const orderBy =
+            this.sortColumn === null
+                ? ""
+                : ` ORDER BY ${sqlIdent(this.sortColumn)} ${this.sortDirection === "ascending" ? "ASC" : "DESC"}`
         this.rows =
             this.columns.length > 0
-                ? await sql.queryObjects(`SELECT * FROM ${tableName} LIMIT ? OFFSET ?`, this.columns, [
+                ? await sql.queryObjects(`SELECT * FROM ${tableName}${orderBy} LIMIT ? OFFSET ?`, this.columns, [
                       String(this.pageSize),
                       String(offset),
                   ])
@@ -422,13 +433,39 @@ export class ViewSql extends HTMLElement {
         this.tablesContainer.innerHTML = ""
 
         const head = document.createElement("thead")
-        head.innerHTML = "<tr><th>Name</th><th>Rows</th></tr>"
+        const headerRow = document.createElement("tr")
+        for (const [column, label] of [
+            ["name", "Name"],
+            ["rowCount", "Rows"],
+        ]) {
+            const th = document.createElement("th")
+            th.textContent = label
+            this.bindSortHeader(th, column, this.tablesSortColumn, this.tablesSortDirection, async () => {
+                this.tablesSortDirection =
+                    this.tablesSortColumn === column && this.tablesSortDirection === "ascending"
+                        ? "descending"
+                        : "ascending"
+                this.tablesSortColumn = column
+                this.renderTables()
+                this.focusSortHeader(this.tablesContainer, column)
+            })
+            headerRow.appendChild(th)
+        }
+        head.appendChild(headerRow)
         this.tablesContainer.appendChild(head)
 
         const body = document.createElement("tbody")
         this.tablesContainer.appendChild(body)
 
-        for (const tableInfo of this.tables) {
+        const sortedTables = [...this.tables]
+        if (this.tablesSortColumn !== null) {
+            const column = this.tablesSortColumn
+            const direction = this.tablesSortDirection === "ascending" ? 1 : -1
+            sortedTables.sort(
+                (a, b) => direction * (column === "rowCount" ? a.rowCount - b.rowCount : a.name.localeCompare(b.name)),
+            )
+        }
+        for (const tableInfo of sortedTables) {
             const row = document.createElement("tr")
             row.dataset.element = "table-row"
             row.dataset.table = tableInfo.name
@@ -462,6 +499,7 @@ export class ViewSql extends HTMLElement {
     async selectTable(tableName) {
         if (tableName === this.selectedTable) return
         this.selectedTable = tableName
+        this.sortColumn = null
         this.currentPage = 0
         this.selectedRowIndex = -1
         this.cancelEdit()
@@ -476,6 +514,40 @@ export class ViewSql extends HTMLElement {
             const isSelected = row.dataset.table === this.selectedTable
             row.setAttribute("aria-selected", isSelected ? "true" : "false")
         })
+    }
+
+    bindSortHeader(th, column, activeColumn, direction, activate) {
+        th.dataset.column = column
+        th.dataset.action = "sort"
+        th.setAttribute("tabindex", "0")
+        th.setAttribute("scope", "col")
+        if (column === activeColumn) th.setAttribute("aria-sort", direction)
+        th.addEventListener("click", activate)
+        th.addEventListener("keydown", (event) => {
+            if (event.key !== "Enter" && event.key !== " ") return
+            event.preventDefault()
+            event.stopPropagation()
+            void activate()
+        })
+    }
+
+    focusSortHeader(table, column) {
+        const header = [...table.querySelectorAll('th[data-action="sort"]')].find((th) => th.dataset.column === column)
+        assert(header, `view-sql sort header missing: ${column}`)
+        header.focus()
+    }
+
+    async sortByColumn(column) {
+        assert(this.mode === "browser", "view-sql header sorting requires browser mode")
+        assert(this.columns.includes(column), `view-sql unknown sort column: ${column}`)
+        this.sortDirection =
+            this.sortColumn === column && this.sortDirection === "ascending" ? "descending" : "ascending"
+        this.sortColumn = column
+        this.currentPage = 0
+        this.selectedRowIndex = -1
+        this.cancelEdit()
+        await this.fetchTableData()
+        this.focusSortHeader(this.tableContainer, column)
     }
 
     renderTable() {
@@ -515,6 +587,9 @@ export class ViewSql extends HTMLElement {
             const th = document.createElement("th")
             th.textContent = column
             th.dataset.column = column
+            if (this.mode === "browser") {
+                this.bindSortHeader(th, column, this.sortColumn, this.sortDirection, () => this.sortByColumn(column))
+            }
             headerRow.appendChild(th)
         })
         thead.appendChild(headerRow)
@@ -585,7 +660,8 @@ export class ViewSql extends HTMLElement {
         if (
             ArrayBuffer.isView(value) ||
             (Array.isArray(value) && value.every((byte) => Number.isInteger(byte) && byte >= 0 && byte <= 255))
-        ) return "binary"
+        )
+            return "binary"
 
         const lowerCol = String(column || "").toLowerCase()
         const booleanWords = [
