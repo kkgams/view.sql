@@ -14,5 +14,5 @@ fragments from the same archive. Do not also install old individual SQL View
 archives because deployment paths overlap. Existing release pins are unchanged.
 
 See README.md for version rules and release commands. Enable GitHub Pages with
-GitHub Actions as its source to deploy the minimal docs on default-branch pushes.
+GitHub Actions as its source to deploy the minimal docs on pushes to `release`.
 Local preparation and tagging do not push or publish.

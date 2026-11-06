@@ -3,3 +3,6 @@ build/
 dist/
 node_modules/
 __pycache__/
+/build/
+/tools/
+/gams_modules/

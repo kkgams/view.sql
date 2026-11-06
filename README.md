@@ -10,7 +10,7 @@ Database browser, SQL console and create-table popup, maintained and released to
 
 Requires a compatible GAMS Host, `plugin.sql`, `ui.popup` and `ui.toast`.
 The Host supplies browser APIs, `/core`, `/util`, `/widgets` and theme styling.
-This repository is not a standalone Host or external Project.
+The local `gams.json` is a development Project, not a standalone Host.
 
 ## Develop
 
@@ -20,13 +20,13 @@ Requires Node.js 24+, Python 3 (stdlib), Make, curl and tar; no npm install need
 npm test
 make validate-docs
 make serve-docs                 # http://localhost:8080
-make build-docs                 # portable wiki under build/site/
+make docs                 # portable wiki under build/site/
 npm run package                # one ZIP and SHA256SUMS under dist/
 ```
 
 The wiki uses justgook/wiki v1.4.0, cached under ignored `build/`.
 Enable GitHub Pages with **Settings → Pages → Source → GitHub Actions** to deploy
-docs on default-branch pushes. The [overview](docs/index.md) explains the Views.
+docs on pushes to `release`. The [overview](docs/index.md) explains the Views.
 Local tests cover syntax/import closure, View registration and SQL console execution, archive contents,
 checksums and reproducibility, not native Host integration or theme rendering.
 
@@ -81,7 +81,7 @@ npm version patch -m '🔖(view.sql): release v%s'  # or minor / major
 git push origin HEAD --follow-tags
 ```
 
-Branch pushes run checks and deploy default-branch docs, not Unit releases.
+Branch pushes run checks and deploy release-branch docs, not Unit releases.
 See [PUBLISHING.md](PUBLISHING.md) for release boundaries.
 
 ## License
@@ -89,3 +89,30 @@ See [PUBLISHING.md](PUBLISHING.md) for release boundaries.
 Apache-2.0. Preserve LICENSE and NOTICE. Historical extraction/consolidation
 records remain in the repository as described in [NOTES.md](NOTES.md); they are
 not approval gates or new legal certification.
+
+## Local Project and documentation
+
+Requires Node.js 24+, Python 3, Make, curl, tar and unzip. On macOS Apple Silicon:
+
+```sh
+make open            # check source and open this repository's gams.json
+make serve-docs      # http://localhost:8080; DOCS_PORT overrides
+make validate-docs
+make docs            # portable documentation under build/site/
+```
+
+`make open` downloads the released Host into ignored `tools/gams.app` when absent,
+retains its notices in `tools/gams-release-notices/`, and explicitly sets
+`GAMS_APP_CWD`. It never updates an existing app implicitly or bypasses Gatekeeper.
+The Project uses local canonical View source; no sibling checkout is needed.
+First startup installs pinned released dependencies into ignored `gams_modules/`
+and requires network access. Source-only Views need no compilation; `make build`
+checks JavaScript syntax and local Project entry paths before launch.
+
+Documentation uses pinned justgook/wiki v1.4.0, with downloaded engine and output
+under ignored `build/`. `build-docs` remains an alias. Every push to `release`
+publishes via `make docs`, independently of version tags; select GitHub Actions
+as the repository's Pages source. Unit release-tag policy is unchanged.
+
+The local SQL Project uses an in-memory database; create tables through the browser
+or console. Its contents do not persist after closing the Host.
