@@ -2,3 +2,9 @@ build.nosync/
 tools/
 gams_modules/
 .DS_Store
+
+# Prevent accidental staging of output from the retired tooling.
+build/
+dist/
+__pycache__/
+*.pyc
