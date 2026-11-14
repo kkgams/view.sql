@@ -5,12 +5,13 @@ status: reference
 
 # SQL Views
 
-`view.sql` provides three GAMS Views in one release archive. `view-sql`
-(`views/view-sql.js`) browses database tables, displays paginated rows, supports
-row editing and query-based selection. `view-sql-console`
-(`views/view-sql-console.js`) executes SQL statements and displays query results.
-`sql-table-editor` (`views/sql-table-editor.js`) is the create-table popup for
-specifying columns, types, primary keys and constraints.
+Database browser, SQL console and create-table popup for [GAMS](https://github.com/kkgams/gams), maintained in one combined `view.sql.zip`. Register each View with its own `#views/...` archive entry; do not also install overlapping old individual SQL archives. Requires `plugin.sql`, `ui.popup`, `ui.toast` and Host-owned SQL helpers/widgets/styling. The local Project uses an in-memory database that does not persist after closing the Host.
+
+| View | Source → deployed file | Screenshot | Original work |
+| --- | --- | --- | --- |
+| Database browser (`view-sql`) | `src/views/view-sql.js` → `views/view-sql.js` | Not available | GAMS authors |
+| SQL console (`view-sql-console`) | `src/views/view-sql-console.js` → `views/view-sql-console.js` | Not available | GAMS authors |
+| Create table (`sql-table-editor`) | `src/views/sql-table-editor.js` → `views/sql-table-editor.js` | Not available | GAMS authors |
 
 In browser mode, click any data-column header to sort ascending; activate it
 again to reverse direction, or another header to start ascending there. Enter
@@ -21,10 +22,19 @@ switching tables. The sidebar's Name and Rows headers sort the table list too.
 The Host supplies direction icons through shared `base.css`.
 Chooser/saver modes retain the ordering of their configured SQL queries.
 
-Register each View separately in the external Project using the same
-`view.sql-1.1.0.zip` URL with its corresponding `#views/...` entry fragment.
-The Views require a compatible GAMS Host, `plugin.sql`, and the `ui.popup` and
-`ui.toast` services; SQL helpers, editor/pagination widgets and styling come
-from the Host. The archive retains LICENSE, NOTICE, README.md and NOTES.md,
-without `unit.json`. See the [repository README](https://github.com/kkgams/view.sql#readme)
-for checks and release commands.
+## Development
+
+Requires Make, Node.js 24+, Python 3, curl, zip, unzip and tar. `make open` requires macOS Apple Silicon. Sources load directly; Host helpers and pinned released dependencies in `gams.json` are not bundled.
+
+| Command | Purpose |
+| --- | --- |
+| `make open` | Open local Project in released Host; first launch needs network. |
+| `make check` | Check JavaScript syntax. |
+| `make test` | Run native JS console, sorting, BLOB and registration tests. |
+| `make package` | Build stable-name ZIP and SHA256SUMS under `build.nosync/`. |
+| `make serve-docs` | Preview pinned wiki; `DOCS_PORT=8081` overrides port 8080. |
+| `make docs` | Build portable wiki in `build.nosync/site/`. |
+| `make validate-docs` | Validate wiki links/content. |
+| `make clean` | Remove build output and marked downloads; refuse tracked files, symlinks and supplied tools/Units. |
+
+Existing Host tools are never implicitly updated. Keep macOS security checks intact. Native Host/plugin.sql integration and GUI/theme rendering remain unverified; domain tests substitute Host imports.

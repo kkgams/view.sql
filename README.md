@@ -1,118 +1,28 @@
 # view.sql
 
-Database browser, SQL console and create-table popup, maintained and released together:
+Database browser, SQL console and create-table popup for [GAMS](https://github.com/kkgams/gams), maintained in one combined `view.sql.zip`. Register each View with its own `#views/...` archive entry; do not also install overlapping old individual SQL archives. Requires `plugin.sql`, `ui.popup`, `ui.toast` and Host-owned SQL helpers/widgets/styling. The local Project uses an in-memory database that does not persist after closing the Host.
 
-| View ID | Deployment path | Purpose |
-| --- | --- | --- |
-| `view-sql` | `views/view-sql.js` | Browse/edit rows and query-based selection |
-| `view-sql-console` | `views/view-sql-console.js` | Execute SQL and inspect query results |
-| `sql-table-editor` | `views/sql-table-editor.js` | Create tables with typed columns and constraints |
+| View | Source → deployed file | Screenshot | Original work |
+| --- | --- | --- | --- |
+| Database browser (`view-sql`) | `src/views/view-sql.js` → `views/view-sql.js` | Not available | GAMS authors |
+| SQL console (`view-sql-console`) | `src/views/view-sql-console.js` → `views/view-sql-console.js` | Not available | GAMS authors |
+| Create table (`sql-table-editor`) | `src/views/sql-table-editor.js` → `views/sql-table-editor.js` | Not available | GAMS authors |
 
-Requires a compatible GAMS Host, `plugin.sql`, `ui.popup` and `ui.toast`.
-The Host supplies browser APIs, `/core`, `/util`, `/widgets` and theme styling.
-The local `gams.json` is a development Project, not a standalone Host.
+The ZIP includes [Apache-2.0](LICENSE), [NOTICE](NOTICE) and [licensing scope](LICENSING.md).
 
-## Develop
+## Development
 
-Requires Node.js 24+, Python 3 (stdlib), Make, curl and tar; no npm install needed.
+Requires Make, Node.js 24+, Python 3, curl, zip, unzip and tar. `make open` requires macOS Apple Silicon. Sources load directly; Host helpers and pinned released dependencies in `gams.json` are not bundled.
 
-```sh
-npm test
-make validate-docs
-make serve-docs                 # http://localhost:8080
-make docs                 # portable wiki under build/site/
-npm run package                # one ZIP and SHA256SUMS under dist/
-```
+| Command | Purpose |
+| --- | --- |
+| `make open` | Open local Project in released Host; first launch needs network. |
+| `make check` | Check JavaScript syntax. |
+| `make test` | Run native JS console, sorting, BLOB and registration tests. |
+| `make package` | Build stable-name ZIP and SHA256SUMS under `build.nosync/`. |
+| `make serve-docs` | Preview pinned wiki; `DOCS_PORT=8081` overrides port 8080. |
+| `make docs` | Build portable wiki in `build.nosync/site/`. |
+| `make validate-docs` | Validate wiki links/content. |
+| `make clean` | Remove build output and marked downloads; refuse tracked files, symlinks and supplied tools/Units. |
 
-The wiki uses justgook/wiki v1.4.0, cached under ignored `build/`.
-Enable GitHub Pages with **Settings → Pages → Source → GitHub Actions** to deploy
-docs on pushes to `release`. The [overview](docs/index.md) explains the Views.
-Local tests cover syntax/import closure, View registration and SQL console execution, archive contents,
-checksums and reproducibility, not native Host integration or theme rendering.
-
-## Install
-
-The 1.1.0 release archive contains all three deployment paths above and LICENSE,
-NOTICE, README.md and NOTES.md. It strips `src/` and does not include `unit.json`.
-After publication, register each View separately using the same archive URL and
-its own entry fragment, for example:
-
-```text
-https://github.com/kkgams/view.sql/releases/download/v1.1.0/view.sql-1.1.0.zip#views/view-sql.js
-https://github.com/kkgams/view.sql/releases/download/v1.1.0/view.sql-1.1.0.zip#views/view-sql-console.js
-https://github.com/kkgams/view.sql/releases/download/v1.1.0/view.sql-1.1.0.zip#views/sql-table-editor.js
-```
-
-For manual installation, download the ZIP and SHA256SUMS, run
-`shasum -a 256 -c SHA256SUMS`, then extract into staging. Copy deployment files to
-matching Project-relative paths; retain metadata under
-`notices/project-units/view.sql/`, not over the Project's own files.
-Do not also install the old individual SQL View archives: deployment paths overlap.
-Existing tags and pinned example releases remain unchanged.
-
-## Version and release
-
-A maintainer commit constitutes approval. Its matching version tag triggers
-publication; no separate approval, digest variables or special release branch
-is required. The workflow tests and packages the exact tagged checkout, then
-creates a GitHub Release containing `view.sql-<version>.zip` and SHA256SUMS.
-Existing releases must not be overwritten or published tags moved.
-
-Versions and tags are exactly `MAJOR.MINOR.PATCH` and `vMAJOR.MINOR.PATCH`, without
-suffixes or leading zeros. Use **major** for incompatible public API changes,
-**minor** for compatible additions, and **patch** for fixes, docs or internal
-changes without API changes. Public API includes View IDs, inputs, outputs,
-deployment paths and required Host facilities. Use the largest applicable bump.
-
-The prepared 1.1.0 release adds clickable, keyboard-accessible column sorting in
-browser mode, with full-table SQL ordering before pagination and sidebar sorting.
-Direction indicators require GAMS 2.1.0 or newer shared styling. After local validation and tagging, push when publication is authorized:
-
-```sh
-git push origin HEAD refs/tags/v1.1.0
-```
-
-For later releases, start from a clean checkout with changes committed:
-
-```sh
-npm test
-make validate-docs
-npm version patch -m '🔖(view.sql): release v%s'  # or minor / major
-git push origin HEAD --follow-tags
-```
-
-Branch pushes run checks and deploy release-branch docs, not Unit releases.
-See [PUBLISHING.md](PUBLISHING.md) for release boundaries.
-
-## License
-
-Apache-2.0. Preserve LICENSE and NOTICE. Historical extraction/consolidation
-records remain in the repository as described in [NOTES.md](NOTES.md); they are
-not approval gates or new legal certification.
-
-## Local Project and documentation
-
-Requires Node.js 24+, Python 3, Make, curl, tar and unzip. On macOS Apple Silicon:
-
-```sh
-make open            # check source and open this repository's gams.json
-make serve-docs      # http://localhost:8080; DOCS_PORT overrides
-make validate-docs
-make docs            # portable documentation under build/site/
-```
-
-`make open` downloads the released Host into ignored `tools/gams.app` when absent,
-retains its notices in `tools/gams-release-notices/`, and explicitly sets
-`GAMS_APP_CWD`. It never updates an existing app implicitly or bypasses Gatekeeper.
-The Project uses local canonical View source; no sibling checkout is needed.
-First startup installs pinned released dependencies into ignored `gams_modules/`
-and requires network access. Source-only Views need no compilation; `make build`
-checks JavaScript syntax and local Project entry paths before launch.
-
-Documentation uses pinned justgook/wiki v1.4.0, with downloaded engine and output
-under ignored `build/`. `build-docs` remains an alias. Every push to `release`
-publishes via `make docs`, independently of version tags; select GitHub Actions
-as the repository's Pages source. Unit release-tag policy is unchanged.
-
-The local SQL Project uses an in-memory database; create tables through the browser
-or console. Its contents do not persist after closing the Host.
+Existing Host tools are never implicitly updated. Keep macOS security checks intact. Native Host/plugin.sql integration and GUI/theme rendering remain unverified; domain tests substitute Host imports.
