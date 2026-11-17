@@ -35,6 +35,6 @@ Requires Make, Node.js 24+, Python 3, curl, zip, unzip and tar. `make open` requ
 | `make serve-docs` | Preview pinned wiki; `DOCS_PORT=8081` overrides port 8080. |
 | `make docs` | Build portable wiki in `build.nosync/site/`. |
 | `make validate-docs` | Validate wiki links/content. |
-| `make clean` | Remove build output and marked downloads; refuse tracked files, symlinks and supplied tools/Units. |
+| `make clean` | Remove all of `build.nosync/`, `tools/` and `gams_modules/`, without ownership markers; refuse tracked files or symlinks in deletion paths before deleting anything. |
 
 Existing Host tools are never implicitly updated. Keep macOS security checks intact. Native Host/plugin.sql integration and GUI/theme rendering remain unverified; domain tests substitute Host imports.
