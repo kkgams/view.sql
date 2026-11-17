@@ -647,7 +647,7 @@ export class ViewSql extends HTMLElement {
                 break
             default:
                 if (typeof value === "string" && value.length > 100) {
-                    td.textContent = value.substring(0, 100) + "..."
+                    td.textContent = `${value.substring(0, 100)}...`
                     td.title = value
                 } else {
                     td.textContent = value ?? ""

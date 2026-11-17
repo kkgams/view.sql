@@ -117,7 +117,6 @@ function splitSqlStatements(sql) {
                 continue
             }
             index++
-            continue
         }
     }
 
