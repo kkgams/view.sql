@@ -7,6 +7,8 @@ status: reference
 
 Database browser, SQL console and create-table popup for [GAMS](https://github.com/kkgams/gams), maintained in one combined `view.sql.zip`. Register each View with its own `#views/...` archive entry; do not also install overlapping old individual SQL archives. Requires `plugin.sql`, `ui.popup`, `ui.toast` and Host-owned SQL helpers/widgets/styling. The local Project uses an in-memory database that does not persist after closing the Host.
 
+[Launch fresh SQL demo](https://gams.z0.lv/app.html?showcase=https%3A%2F%2Fgithub.com%2Fkkgams%2Fshowcases%2Freleases%2Fdownload%2Fv0.2.0%2Fsql.zip). Run `SELECT name, price FROM items WHERE rarity = 'rare' ORDER BY price;` against the sample database.
+
 | View | Source → deployed file | Screenshot | Original work |
 | --- | --- | --- | --- |
 | Database browser (`view-sql`) | `src/views/view-sql.js` → `views/view-sql.js` | Not available | GAMS authors |
